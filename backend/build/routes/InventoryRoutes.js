@@ -5,7 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const InventoryController_1 = require("../controllers/InventoryController");
+const RequireAuth_1 = require("../middlewares/RequireAuth");
 const router = express_1.default.Router();
+// require auth for all inventory routes
+router.use(RequireAuth_1.requireAuth);
 // get all
 router.get("/", InventoryController_1.getAllInventory);
 // get by id

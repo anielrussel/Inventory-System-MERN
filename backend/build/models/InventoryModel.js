@@ -21,7 +21,11 @@ const inventorySchema = new Schema({
     isAvailable: {
         type: String,
         required: true
-    }
+    },
+    user_id: {
+        type: String,
+        required: true
+    },
 }, { timestamps: true });
 exports.default = mongoose_1.default.model("Inventory", inventorySchema);
 //# sourceMappingURL=InventoryModel.js.map

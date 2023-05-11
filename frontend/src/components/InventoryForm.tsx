@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Modal, Form, Input, InputNumber, Select } from "antd";
 import axios from "axios";
 import useInventoryContext from "../hooks/useInventoryContext";
+import useAuthContext from "../hooks/useAuthContext";
 
 const InventoryForm: React.FC = () => {
   const inventoryContext = useInventoryContext();
@@ -9,8 +10,9 @@ const InventoryForm: React.FC = () => {
   if (!inventoryContext) {
     return null; // or render a loading state
   }
-
+  const [error, setError] = useState("");
   const { dispatch } = inventoryContext;
+  const { user } = useAuthContext()
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -50,14 +52,22 @@ const InventoryForm: React.FC = () => {
 
   const [form] = Form.useForm();
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async () => {
+    if (!user) {
+      setError("You must be logged in to add an inventory");
+      return;
+    }
+  
+    const values = form.getFieldsValue();
+    
     try {
       const response = await axios.post("/api/inventory", values, {
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${user.token}`,
         },
       });
-
+  
       if (response.status === 200) {
         form.resetFields(); // Reset form fields
         console.log("new inventory added", response.data);
@@ -67,6 +77,8 @@ const InventoryForm: React.FC = () => {
       console.error("Error:", error);
     }
   };
+  
+  
 
   return (
     <div>

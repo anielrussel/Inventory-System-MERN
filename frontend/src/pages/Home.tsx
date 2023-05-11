@@ -1,34 +1,66 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import InventoryForm from "../components/InventoryForm";
 import useInventoryContext from "../hooks/useInventoryContext";
 import axios from "axios";
 import InventoryDetails from "../components/InventoryDetails";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import useAuthContext from "../hooks/useAuthContext";
+import Login from "./Login";
 
 const Home: React.FC = () => {
   const { inventory, dispatch } = useInventoryContext();
+  const { user } = useAuthContext();
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await axios.get("/api/inventory");
+        const response = await axios.get("/api/inventory", {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        });
         if (response.status === 200) {
           dispatch({ type: "SET_INVENTORY", payload: response.data });
         }
       } catch (error) {
         console.error("Error fetching inventory:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchInventory();
-  }, [dispatch]);
+    if (user && user.token) {
+      fetchInventory();
+    } else {
+      setLoading(false);
+    }
+  }, [dispatch, user]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen text-center">
+        <h1 className="font-Rubik text-3xl font-bold">Loading...</h1>
+      </div>
+    );
+  }
 
   return (
-    <div className="px-4 lg:px-32 mt-32">
-      <div>
-        <InventoryForm />
-      </div>
-      {inventory && (
-        <InventoryDetails inventory={inventory} />
+    <div>
+      {inventory ? (
+        <>
+          <Navbar />
+          <div className="px-4 lg:px-32 mt-32">
+            <div>
+              <InventoryForm />
+            </div>
+            <InventoryDetails inventory={inventory} />
+          </div>
+          <Footer />
+        </>
+      ) : (
+        <Login />
       )}
     </div>
   );

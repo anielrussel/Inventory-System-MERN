@@ -18,7 +18,11 @@ const inventorySchema = new Schema({
     isAvailable: {
         type: String,
         required: true
-    }
+    },
+    user_id: {
+        type: String,
+        required: true
+      },
 }, { timestamps: true })
 
 export default mongoose.model("Inventory", inventorySchema)

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import useInventoryContext from "../hooks/useInventoryContext";
 import axios from "axios";
 import { RiDeleteBin6Fill } from "react-icons/ri";
-import { FaEdit } from "react-icons/fa"
+import { FaEdit } from "react-icons/fa";
 import { Modal } from "antd";
+import useAuthContext from "../hooks/useAuthContext";
+import noinventory from "../assets/noinventory.jpg";
 
 interface InventoryItem {
   _id: React.Key;
@@ -22,9 +24,10 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
   const [showAvailable, setShowAvailable] = useState(false);
   const [showNotAvailable, setShowNotAvailable] = useState(false);
   const [sortOption, setSortOption] = useState("all");
-  const [updateItem, setUpdateItem] = useState<InventoryItem | null>(null)
-  const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null)
+  const [updateItem, setUpdateItem] = useState<InventoryItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
   const { dispatch } = useInventoryContext();
+  const { user } = useAuthContext();
 
   // ant modal for delete
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -39,30 +42,51 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
 
   // handle Update
   const handleUpdate = (inventoryItem: InventoryItem) => {
-    setUpdateItem(inventoryItem)
-  }
+    setUpdateItem(inventoryItem);
+  };
   const handleUpdateSubmit = async (updatedItem: InventoryItem) => {
+    if (!user) {
+      return;
+    }
+
     try {
-      const response = await axios.put(`/api/inventory/${updatedItem._id}`, updatedItem)
+      const response = await axios.put(
+        `/api/inventory/${updatedItem._id}`,
+        updatedItem,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
-        dispatch({ type: 'UPDATE_INVENTORY', payload: updatedItem })
-        setUpdateItem(null)
+        dispatch({ type: "UPDATE_INVENTORY", payload: updatedItem });
+        setUpdateItem(null);
       }
     } catch (error) {
-      console.log("Error", error)
+      console.log("Error", error);
     }
-  }
+  };
 
   // handle Delete
   const handleDelete = async (inventoryItem: InventoryItem) => {
+    if (!user) {
+      return;
+    }
+
     try {
       const response = await axios.delete(
-        `/api/inventory/${inventoryItem._id}`
+        `/api/inventory/${inventoryItem._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
       );
-  
+
       if (response.status === 200) {
-        dispatch({ type: "DELETE_INVENTORY", payload: inventoryItem });
+        dispatch({ type: "DELETE_INVENTORY", payload: response.data });
       }
     } catch (error) {
       console.error("Error:", error);
@@ -70,10 +94,11 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
     setIsModalOpen(false);
   };
   const handleOk = async () => {
-    if (itemToDelete) { // check if itemToDelete is not null
+    if (itemToDelete) {
+      // check if itemToDelete is not null
       await handleDelete(itemToDelete);
     }
-  };  
+  };
 
   // sort inventory
   const sortInventory = (inventory: InventoryItem[], option: String) => {
@@ -87,7 +112,9 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
       case "price":
         return inventory.sort((a, b) => a.price - b.price);
       case "total":
-        return inventory.sort((a, b) => a.quantity * a.price - b.quantity * b.price)
+        return inventory.sort(
+          (a, b) => a.quantity * a.price - b.quantity * b.price
+        );
       default:
         return inventory;
     }
@@ -103,6 +130,15 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
     ),
     sortOption
   );
+
+  if (inventory.length === 0) {
+    return (
+      <div className="flex flex-col items-center mt-20 gap-6">
+        <h1 className="font-Rubik font-semibold text-xl">No Inventory created yet...</h1>
+        <img src={noinventory} alt="noinventory" className="w-[20%]" />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -164,9 +200,13 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
         <thead className="bg-gray-300">
           <tr>
             <th className="border-2 border-black px-1 lg:px-4 py-4">Name</th>
-            <th className="border-2 border-black px-1 lg:px-4 py-4">Quantity</th>
+            <th className="border-2 border-black px-1 lg:px-4 py-4">
+              Quantity
+            </th>
             <th className="border-2 border-black px-1 lg:px-4 py-4">Price</th>
-            <th className="border-2 border-black px-1 lg:px-4 py-4">Total Price</th>
+            <th className="border-2 border-black px-1 lg:px-4 py-4">
+              Total Price
+            </th>
             <th className="border-2 border-black px-1 lg:px-4 py-4">Status</th>
             <th className="border-2 border-black px-1 lg:px-4 py-4">Action</th>
           </tr>
@@ -184,7 +224,10 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
                 ₱{inventoryItem.price.toLocaleString()}
               </td>
               <td className="border border-black px-1 lg:px-4">
-                ₱{(inventoryItem.price * inventoryItem.quantity).toLocaleString()}
+                ₱
+                {(
+                  inventoryItem.price * inventoryItem.quantity
+                ).toLocaleString()}
               </td>
               <td className="border border-black px-1 lg:px-4">
                 {inventoryItem.isAvailable}
@@ -193,18 +236,22 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
                 <button
                   className="p-2 bg-white rounded-md cursor-pointer"
                   onClick={() => {
-                    setItemToDelete(inventoryItem)
-                    showModal()
+                    setItemToDelete(inventoryItem);
+                    showModal();
                   }}
                 >
-                  <RiDeleteBin6Fill color={'red'} />
+                  <RiDeleteBin6Fill color={"red"} />
                 </button>
-                <Modal title="Confirm Deletion"
+                <Modal
+                  title="Confirm Deletion"
                   open={isModalOpen}
-                  maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.1)' }}
+                  maskStyle={{ backgroundColor: "rgba(0, 0, 0, 0.1)" }}
                   onOk={handleOk}
-                  okButtonProps={{ style: { backgroundColor: '#f50', borderColor: '#f50' } }}
-                  onCancel={handleCancel}>
+                  okButtonProps={{
+                    style: { backgroundColor: "#f50", borderColor: "#f50" },
+                  }}
+                  onCancel={handleCancel}
+                >
                   <h1>Are you sure you want to delete?</h1>
                 </Modal>
                 <button
@@ -240,7 +287,10 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
                 type="number"
                 value={updateItem.quantity}
                 onChange={(e) =>
-                  setUpdateItem({ ...updateItem, quantity: parseInt(e.target.value) })
+                  setUpdateItem({
+                    ...updateItem,
+                    quantity: parseInt(e.target.value),
+                  })
                 }
                 className="ml-2 pl-2 rounded-md border border-black w-[50%]"
               />
@@ -251,7 +301,10 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
                 type="number"
                 value={updateItem.price}
                 onChange={(e) =>
-                  setUpdateItem({ ...updateItem, price: parseInt(e.target.value) })
+                  setUpdateItem({
+                    ...updateItem,
+                    price: parseInt(e.target.value),
+                  })
                 }
                 className="ml-2 pl-2 rounded-md border border-black w-[50%]"
               />
@@ -262,7 +315,9 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
                 name="status"
                 id="status"
                 value={updateItem.isAvailable}
-                onChange={(e) => setUpdateItem({ ...updateItem, isAvailable: e.target.value })}
+                onChange={(e) =>
+                  setUpdateItem({ ...updateItem, isAvailable: e.target.value })
+                }
                 className="ml-2 border border-gray-400 rounded-md py-1 outline-none lg:px-3 w-[50%] lg:w-auto"
               >
                 <option value="available">Available</option>

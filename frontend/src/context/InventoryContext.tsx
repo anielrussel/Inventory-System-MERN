@@ -13,7 +13,7 @@ interface InventoryState {
 }
 
 type InventoryAction =
-  | { type: 'SET_INVENTORY'; payload: InventoryItem[] }
+  | { type: 'SET_INVENTORY'; payload?: InventoryItem[] }
   | { type: 'CREATE_INVENTORY'; payload: InventoryItem }
   | { type: 'UPDATE_INVENTORY'; payload: InventoryItem }
   | { type: 'DELETE_INVENTORY'; payload: InventoryItem };
@@ -28,7 +28,7 @@ export const inventoryReducer = (state: InventoryState, action: InventoryAction)
   switch (action.type) {
     case 'SET_INVENTORY':
       return {
-        inventory: action.payload,
+        inventory: action.payload ?? null,
       };
     case 'CREATE_INVENTORY':
       return {

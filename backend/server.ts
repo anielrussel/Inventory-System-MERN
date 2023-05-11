@@ -1,7 +1,9 @@
 import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
+import { Request, Response } from "express"
 import InventoryRoutes from "./routes/InventoryRoutes"
+import UserRoutes from "./routes/UserRoutes"
 
 dotenv.config()
 
@@ -10,9 +12,14 @@ const app = express()
 
 // middlewares
 app.use(express.json())
+app.use((req: Request, res: Response, next) => {
+    console.log(req.path, req.method)
+    next()
+})
 
 // routes
 app.use('/api/inventory', InventoryRoutes)
+app.use('/api/user', UserRoutes)
 
 // connect to database
 const MONGO_URI = process.env.MONGO_URI

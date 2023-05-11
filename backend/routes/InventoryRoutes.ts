@@ -6,8 +6,12 @@ import {
   deleteInventory,
   updateInventory,
 } from "../controllers/InventoryController";
+import { requireAuth } from "../middlewares/RequireAuth";
 
 const router = express.Router();
+
+// require auth for all inventory routes
+router.use(requireAuth)
 
 // get all
 router.get("/", getAllInventory);
