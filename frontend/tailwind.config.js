@@ -4,9 +4,6 @@ export default {
   "./src/**/*.{js,ts,jsx,tsx}",],
   theme: {
     extend: {
-      backgroundImage: {
-        "signup-bg": "url('./src/assets/signup-bg.jpg')"
-      },
       fontFamily: {
         "Lobster": "var(--font-family1)",
         "Rubik": "var(--font-family2)"
