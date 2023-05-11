@@ -2,13 +2,10 @@ import React, { useState } from "react";
 import logo from "../assets/logo.png"
 import loginIcon from "../assets/login-icon.jpg"
 import useLogin from "../hooks/useLogin";
-import { Link, useNavigate } from "react-router-dom";
-import useAuthContext from "../hooks/useAuthContext";
+import { Link } from "react-router-dom";
 import signupbg from "../assets/signup-bg.jpg"
 
 const Login: React.FC = () => {
-    const { user } = useAuthContext()
-    const navigate = useNavigate()
     const { login, error, isLoading } = useLogin()
     const [formData, setFormData] = useState({
         email: "",
@@ -29,12 +26,6 @@ const Login: React.FC = () => {
         event.preventDefault()
 
         await login(formData.email, formData.password)
-
-        if (user) {
-            navigate("/")
-        } else {
-            navigate("/login")
-        }
     }
 
     return (
@@ -50,7 +41,7 @@ const Login: React.FC = () => {
                         </div>
                     </div>
                     <div className="flex flex-col justify-between lg:w-[50%] w-full bg-white p-8 lg:rounded-tr-lg lg:rounded-br-lg rounded-lg lg:px-28">
-                        <div className="flex flex-col items-center">
+                        <div className="flex flex-col items-center text-center">
                             <img src={logo} alt="logo" className="w-14 p-2 bg-gray-100 rounded-full" />
                             <h1 className="font-Rubik text-2xl font-bold pt-4 text-gray-700">Welcome!</h1>
                             <p className="text-center font-Rubik text-sm pt-1 text-gray-500">Warm greetings! It's been a pleasure having you. Login your account and make your inventory today.</p>
