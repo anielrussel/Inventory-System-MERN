@@ -10,7 +10,6 @@ const InventoryForm: React.FC = () => {
   if (!inventoryContext) {
     return null; // or render a loading state
   }
-  const [error, setError] = useState("");
   const { dispatch } = inventoryContext;
   const { user } = useAuthContext()
 
@@ -53,10 +52,6 @@ const InventoryForm: React.FC = () => {
   const [form] = Form.useForm();
 
   const handleSubmit = async () => {
-    if (!user) {
-      setError("You must be logged in to add an inventory");
-      return;
-    }
   
     const values = form.getFieldsValue();
     
