@@ -2,8 +2,8 @@ import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import { Request, Response } from "express"
-import InventoryRoutes from "../routes/InventoryRoutes"
-import UserRoutes from "../routes/UserRoutes"
+import InventoryRoutes from "./routes/InventoryRoutes"
+import UserRoutes from "./routes/UserRoutes"
 
 dotenv.config()
 
