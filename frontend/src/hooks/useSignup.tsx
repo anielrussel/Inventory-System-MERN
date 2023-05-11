@@ -23,7 +23,7 @@ const useSignup = () => {
         setLoginState({ error: null, isLoading: true })
 
         try {
-            const response = await axios.post<LoginResponse>('/api/user/signup', { email, password }, {
+            const response = await axios.post<LoginResponse>('https://inventory-sytem-mern.onrender.com/api/user/signup', { email, password }, {
                 headers: {
                     "Content-Type": "application/json"
                 }

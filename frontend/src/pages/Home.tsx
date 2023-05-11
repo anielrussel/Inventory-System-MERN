@@ -16,7 +16,7 @@ const Home: React.FC = () => {
   useEffect(() => {
     const fetchInventory = async () => {
       try {
-        const response = await axios.get("/api/inventory", {
+        const response = await axios.get("https://inventory-sytem-mern.onrender.com/api/inventory", {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },

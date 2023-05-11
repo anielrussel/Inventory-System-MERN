@@ -56,7 +56,7 @@ const InventoryForm: React.FC = () => {
     const values = form.getFieldsValue();
     
     try {
-      const response = await axios.post("/api/inventory", values, {
+      const response = await axios.post("https://inventory-sytem-mern.onrender.com/api/inventory", values, {
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${user.token}`,

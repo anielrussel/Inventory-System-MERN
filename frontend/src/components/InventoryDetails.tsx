@@ -51,7 +51,7 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
 
     try {
       const response = await axios.put(
-        `/api/inventory/${updatedItem._id}`,
+        `https://inventory-sytem-mern.onrender.com/api/inventory/${updatedItem._id}`,
         updatedItem,
         {
           headers: {
@@ -77,7 +77,7 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
 
     try {
       const response = await axios.delete(
-        `/api/inventory/${inventoryItem._id}`,
+        `https://inventory-sytem-mern.onrender.com/api/inventory/${inventoryItem._id}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,

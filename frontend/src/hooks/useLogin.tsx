@@ -22,7 +22,7 @@ const useLogin = () => {
     const login = async (email: string, password: string) => {
         setLoginState({ error: null, isLoading: true })
         try {
-            const response = await axios.post<LoginResponse>('/api/user/login',
+            const response = await axios.post<LoginResponse>('https://inventory-sytem-mern.onrender.com/api/user/login',
                 { email, password },
                 {
                     headers: {
