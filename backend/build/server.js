@@ -8,10 +8,12 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const InventoryRoutes_1 = __importDefault(require("./routes/InventoryRoutes"));
 const UserRoutes_1 = __importDefault(require("./routes/UserRoutes"));
+const cors_1 = __importDefault(require("cors"));
 dotenv_1.default.config();
 // express app
 const app = (0, express_1.default)();
 // middlewares
+app.use((0, cors_1.default)());
 app.use(express_1.default.json());
 app.use((req, res, next) => {
     console.log(req.path, req.method);
