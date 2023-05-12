@@ -3,13 +3,16 @@ import { FiLogOut } from "react-icons/fi"
 import logo from "../assets/logo.png"
 import useLogout from '../hooks/useLogout'
 import useAuthContext from '../hooks/useAuthContext'
+import { useNavigate } from 'react-router-dom'
 
 const Navbar: React.FC = () => {
   const { logout } = useLogout()
   const { user } = useAuthContext()
+  const navigate = useNavigate()
 
   const handleClick = () => {
     logout()
+    navigate("/login")
   }
 
   return (
