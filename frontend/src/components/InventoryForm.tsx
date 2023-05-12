@@ -3,6 +3,9 @@ import { Button, Modal, Form, Input, InputNumber, Select } from "antd";
 import axios from "axios";
 import useInventoryContext from "../hooks/useInventoryContext";
 import useAuthContext from "../hooks/useAuthContext";
+import { ToastContainer, toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 const InventoryForm: React.FC = () => {
   const inventoryContext = useInventoryContext();
@@ -49,6 +52,8 @@ const InventoryForm: React.FC = () => {
     console.log("focus");
   };
 
+  const notify = () => toast("Inventory Added");
+
   const [form] = Form.useForm();
 
   const handleSubmit = async () => {
@@ -67,6 +72,7 @@ const InventoryForm: React.FC = () => {
         form.resetFields(); // Reset form fields
         console.log("new inventory added", response.data);
         dispatch({ type: "CREATE_INVENTORY", payload: response.data });
+        notify()
       }
     } catch (error) {
       console.error("Error:", error);
@@ -77,6 +83,7 @@ const InventoryForm: React.FC = () => {
 
   return (
     <div>
+      <ToastContainer autoClose={3000} />
       <div className="flex justify-end">
         <Button type="primary" onClick={showModal} className="bg-black">
           Add Inventory

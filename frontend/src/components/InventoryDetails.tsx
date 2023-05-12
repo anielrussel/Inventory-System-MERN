@@ -6,6 +6,9 @@ import { FaEdit } from "react-icons/fa";
 import { Modal } from "antd";
 import useAuthContext from "../hooks/useAuthContext";
 import noinventory from "../assets/noinventory.jpg";
+import { ToastContainer, toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
 
 interface InventoryItem {
   _id: React.Key;
@@ -28,6 +31,9 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
   const [itemToDelete, setItemToDelete] = useState<InventoryItem | null>(null);
   const { dispatch } = useInventoryContext();
   const { user } = useAuthContext();
+
+  // react toast/notification
+  const deleteNotify = () => toast("Inventory Deleted!");
 
   // ant modal for delete
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,6 +93,7 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
 
       if (response.status === 200) {
         dispatch({ type: "DELETE_INVENTORY", payload: response.data });
+        deleteNotify()
       }
     } catch (error) {
       console.error("Error:", error);
@@ -142,6 +149,7 @@ const InventoryDetails: React.FC<InventoryDetailsProps> = ({ inventory }) => {
 
   return (
     <div>
+      <ToastContainer limit={1} autoClose={3000}/>
       <div className="flex justify-between items-end">
         <div className="flex flex-col lg:flex-row gap-2">
           <input

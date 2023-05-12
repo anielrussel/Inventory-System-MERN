@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import InventoryForm from "../components/InventoryForm";
+import InventoryForm from "./InventoryForm";
 import useInventoryContext from "../hooks/useInventoryContext";
 import axios from "axios";
-import InventoryDetails from "../components/InventoryDetails";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import InventoryDetails from "./InventoryDetails";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
 import useAuthContext from "../hooks/useAuthContext";
 import Login from "./Login";
 
@@ -18,7 +18,7 @@ const Home: React.FC = () => {
       try {
         const response = await axios.get("https://inventory-sytem-mern.onrender.com/api/inventory", {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            "Authorization": `Bearer ${user.token}`,
           },
         });
         if (response.status === 200) {
